@@ -95,6 +95,46 @@ export class CreateChatDto {
   isTimeout?: boolean;
 }
 
+export class RecommendationDto {
+  @ApiProperty({ example: 'Indian Institute of Technology Bombay' })
+  @IsString()
+  name: string;
+
+  @ApiProperty({ example: 'Mumbai, Maharashtra' })
+  @IsString()
+  location: string;
+
+  @ApiProperty({ example: 'Government' })
+  @IsString()
+  type: string;
+
+  @ApiProperty({ example: 'Computer Science and Engineering' })
+  @IsString()
+  courses_offered: string;
+
+  @ApiProperty({ example: 'https://www.iitb.ac.in/' })
+  @IsString()
+  website: string;
+
+  @ApiProperty({ example: 'Admission through JEE Advanced exam' })
+  @IsString()
+  admission_process: string;
+
+  @ApiProperty({ example: 'INR 2-3 lakhs per year' })
+  @IsString()
+  approximate_fees: string;
+
+  @ApiProperty({
+    example: 'Ranked as one of the top engineering colleges in India',
+  })
+  @IsString()
+  notable_features: string;
+
+  @ApiProperty({ example: 'openai_knowledge' })
+  @IsString()
+  source: string;
+}
+
 export class UpdateChatDto {
   @ApiPropertyOptional({
     description: 'Message content',

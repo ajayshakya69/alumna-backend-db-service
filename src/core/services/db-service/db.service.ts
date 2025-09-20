@@ -2,6 +2,12 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { SqlService } from './providers/sql.provider';
 import { MongoModelsType, SqlModelsType } from './db.types';
 import { MongoService } from './providers/mongo.provider';
+import {
+  Chat,
+  ChatRoom,
+  Recommendation,
+} from 'src/modules/chatbot/chatbot.schema';
+import { Sequelize } from 'sequelize';
 
 @Injectable()
 export class DbService implements OnModuleInit {
@@ -20,6 +26,7 @@ export class DbService implements OnModuleInit {
     //   process.env.MONGO_CONNECTION_STRING!,
     // );
     this.sqlService = this.sqlConnection.models;
+
     // this.sqlConnection.sync({ alter: true });
     // this.mongoService = this.mongoConnection.models;
   }

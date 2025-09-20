@@ -2,6 +2,7 @@ import { Sequelize, SyncOptions } from 'sequelize';
 import { SqlModelsType } from '../db.types';
 import { SQL_MODELS } from '../models';
 import { Logger } from '@nestjs/common';
+import { setupAssociations } from 'src/modules/chatbot/chatbot.schema';
 
 export class SqlService {
   logger = new Logger(SqlService.name);
@@ -22,6 +23,7 @@ export class SqlService {
         this.models[typedModelName] = initFn(this.sequelize) as any;
       }
 
+      setupAssociations();
       for (const model of Object.values(this.models)) {
         (model as any)?.associate?.(this.models);
       }

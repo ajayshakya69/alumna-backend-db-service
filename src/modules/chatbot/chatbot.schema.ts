@@ -1,3 +1,4 @@
+// chatbot.schema.ts
 import {
   Model,
   InferAttributes,
@@ -7,6 +8,7 @@ import {
   Sequelize,
 } from 'sequelize';
 
+// ChatRoom Model
 export class ChatRoom extends Model<
   InferAttributes<ChatRoom>,
   InferCreationAttributes<ChatRoom>
@@ -27,19 +29,9 @@ export class ChatRoom extends Model<
           defaultValue: DataTypes.UUIDV4,
           primaryKey: true,
         },
-        title: {
-          type: DataTypes.STRING,
-          allowNull: true,
-        },
-        description: {
-          type: DataTypes.STRING,
-          allowNull: true,
-        },
-        lastMessage: {
-          type: DataTypes.TEXT,
-          allowNull: true,
-        },
-
+        title: DataTypes.STRING,
+        description: DataTypes.STRING,
+        lastMessage: DataTypes.TEXT,
         user: {
           type: DataTypes.STRING,
           allowNull: false,
@@ -56,6 +48,7 @@ export class ChatRoom extends Model<
   }
 }
 
+// Chat Model
 export class Chat extends Model<
   InferAttributes<Chat>,
   InferCreationAttributes<Chat>
@@ -73,8 +66,8 @@ export class Chat extends Model<
       {
         id: {
           type: DataTypes.INTEGER,
-          primaryKey: true,
           autoIncrement: true,
+          primaryKey: true,
         },
         chatId: {
           type: DataTypes.UUID,
@@ -95,7 +88,6 @@ export class Chat extends Model<
         },
         isTimeout: {
           type: DataTypes.BOOLEAN,
-          allowNull: false,
           defaultValue: false,
         },
       },
@@ -108,4 +100,74 @@ export class Chat extends Model<
     );
     return Chat;
   }
+}
+
+// Recommendation Model
+export class Recommendation extends Model<
+  InferAttributes<Recommendation>,
+  InferCreationAttributes<Recommendation>
+> {
+  declare id: CreationOptional<number>;
+  declare chatId: number;
+  declare name: string;
+  declare location: string;
+  declare type: string;
+  declare courses_offered: string;
+  declare website: string;
+  declare admission_process: string;
+  declare approximate_fees: string;
+  declare notable_features: string;
+  declare source: string;
+  declare readonly createdAt?: CreationOptional<Date>;
+  declare readonly updatedAt?: CreationOptional<Date>;
+
+  static setup(sequelize: Sequelize) {
+    Recommendation.init(
+      {
+        id: {
+          type: DataTypes.INTEGER,
+          autoIncrement: true,
+          primaryKey: true,
+        },
+        chatId: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: 'chats',
+            key: 'id',
+          },
+          onDelete: 'CASCADE',
+        },
+        name: DataTypes.STRING,
+        location: DataTypes.STRING,
+        type: DataTypes.STRING,
+        courses_offered: DataTypes.TEXT,
+        website: DataTypes.STRING,
+        admission_process: DataTypes.TEXT,
+        approximate_fees: DataTypes.STRING,
+        notable_features: DataTypes.TEXT,
+        source: DataTypes.STRING,
+      },
+      {
+        sequelize,
+        tableName: 'recommendations',
+        modelName: 'recommendation',
+        timestamps: true,
+      },
+    );
+    return Recommendation;
+  }
+}
+
+// chatbot.schema.ts
+export function setupAssociations() {
+  Chat.hasMany(Recommendation, {
+    foreignKey: 'chatId',
+    as: 'recommendations',
+  });
+
+  Recommendation.belongsTo(Chat, {
+    foreignKey: 'chatId',
+    as: 'chat',
+  });
 }

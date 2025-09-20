@@ -1,6 +1,6 @@
 // src/core/services/db-service/db.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Chat, ChatRoom } from './chatbot.schema';
+import { Chat, ChatRoom, Recommendation } from './chatbot.schema';
 import axios from 'axios';
 import { SenderType } from './chatbot.dto';
 
@@ -9,6 +9,7 @@ export class ChatbotService {
   // expose models
   readonly ChatModel = Chat;
   readonly ChatRoomModel = ChatRoom;
+  readonly RecommendationModel = Recommendation;
 
   /* -------------------- ChatRoom Operations -------------------- */
   async findChatRoomById(id: string) {
@@ -50,33 +51,54 @@ export class ChatbotService {
     message: string;
     isTimeout?: boolean;
   }) {
-    // Save user's message
+    // Save user message
     const userMessage = await this.ChatModel.create(data);
 
-    // If the sender is not the AI (to avoid loops), get AI response
+    // Don't call ML for BOT messages (avoid loops)
     if (data.sender !== SenderType.BOT) {
       try {
         const mlResponse = await axios.post(
           `${process.env.ML_MODEL_URL}/chat?chat_id=${data.chatId}`,
           { message: data.message },
         );
-        console.log(mlResponse.data);
-        const aiMessage = await this.ChatModel.create({
+
+        const botMessage = await this.ChatModel.create({
           chatId: data.chatId,
           sender: SenderType.BOT,
-          message: mlResponse.data?.response,
+          message: mlResponse.data?.response || '...',
         });
-        return aiMessage;
+
+        const recommendations = mlResponse.data?.recommendations;
+
+        // Save recommendations if present
+        if (Array.isArray(recommendations) && recommendations.length > 0) {
+          const recsToCreate = recommendations.map((rec) => ({
+            ...rec,
+            chatId: botMessage.id,
+          }));
+
+          await this.RecommendationModel.bulkCreate(recsToCreate);
+        }
+
+        return mlResponse.data;
       } catch (error) {
-        console.error('Error calling ML API:', error);
+        console.error('Error calling ML API or saving recommendations:', error);
       }
     }
+
+    return userMessage;
   }
 
   async findMessagesByChatId(chatId: string) {
     return this.ChatModel.findAll({
       where: { chatId },
       order: [['createdAt', 'asc']],
+      include: [
+        {
+          model: this.RecommendationModel,
+          as: 'recommendations',
+        },
+      ],
     });
   }
 

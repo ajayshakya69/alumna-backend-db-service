@@ -4,11 +4,13 @@ services:
   krivisio-db-service:
     image: ajayshakya786/krivisio-db-service:latest
     ports:
-      - '3000:3000'
+      - '4000:4000'
     restart: unless-stopped
     environment:
-      POSTGRES_CONNECTION_STRING: 'postgresql://dev_user:dev_password@localhost:5432/dev_db'
-      PORT: 3000
+      POSTGRES_CONNECTION_STRING: 'postgresql://alumna:alumna@3.7.255.54:5432/chat_llm'
+      PORT: 4000
       X_SECRET: 'secret'
+      ML_MODEL_URL: 'https://college-recommendation-prateek.onrender.com'
+
       # Add any environment variables your app needs here
       # e.g. NODE_ENV: production
