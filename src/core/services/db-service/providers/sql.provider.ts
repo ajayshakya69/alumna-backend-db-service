@@ -22,7 +22,6 @@ export class SqlService {
         const typedModelName = modelName as keyof typeof SQL_MODELS;
         this.models[typedModelName] = initFn(this.sequelize) as any;
       }
-
       setupAssociations();
       for (const model of Object.values(this.models)) {
         (model as any)?.associate?.(this.models);

@@ -108,7 +108,7 @@ export class Recommendation extends Model<
   InferCreationAttributes<Recommendation>
 > {
   declare id: CreationOptional<number>;
-  declare chatId: number;
+  declare messageId: string;
   declare name: string;
   declare location: string;
   declare type: string;
@@ -129,7 +129,7 @@ export class Recommendation extends Model<
           autoIncrement: true,
           primaryKey: true,
         },
-        chatId: {
+        messageId: {
           type: DataTypes.INTEGER,
           allowNull: false,
           references: {
@@ -162,12 +162,12 @@ export class Recommendation extends Model<
 // chatbot.schema.ts
 export function setupAssociations() {
   Chat.hasMany(Recommendation, {
-    foreignKey: 'chatId',
+    foreignKey: '',
     as: 'recommendations',
   });
 
   Recommendation.belongsTo(Chat, {
-    foreignKey: 'chatId',
+    foreignKey: 'id',
     as: 'chat',
   });
 }

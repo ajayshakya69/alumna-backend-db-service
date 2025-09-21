@@ -52,15 +52,21 @@ export class ChatbotService {
     isTimeout?: boolean;
   }) {
     // Save user message
+    //
+    console.log('ajay', data.message);
+
     const userMessage = await this.ChatModel.create(data);
 
     // Don't call ML for BOT messages (avoid loops)
     if (data.sender !== SenderType.BOT) {
+      console.log('run for chatMessages');
       try {
         const mlResponse = await axios.post(
           `${process.env.ML_MODEL_URL}/chat?chat_id=${data.chatId}`,
           { message: data.message },
         );
+
+        console.log('ajay', mlResponse.data);
 
         const botMessage = await this.ChatModel.create({
           chatId: data.chatId,
@@ -68,25 +74,27 @@ export class ChatbotService {
           message: mlResponse.data?.response || '...',
         });
 
-        const recommendations = mlResponse.data?.recommendations;
+        let recommendations = mlResponse.data?.recommendations;
 
         // Save recommendations if present
         if (Array.isArray(recommendations) && recommendations.length > 0) {
           const recsToCreate = recommendations.map((rec) => ({
             ...rec,
-            chatId: botMessage.id,
+            messageId: botMessage.id,
+            id: undefined,
           }));
 
-          await this.RecommendationModel.bulkCreate(recsToCreate);
+          recommendations =
+            await this.RecommendationModel.bulkCreate(recsToCreate);
         }
 
-        return mlResponse.data;
+        return { ...botMessage.dataValues, recommendations };
       } catch (error) {
         console.error('Error calling ML API or saving recommendations:', error);
       }
-    }
 
-    return userMessage;
+      return userMessage;
+    }
   }
 
   async findMessagesByChatId(chatId: string) {
