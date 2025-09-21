@@ -36,7 +36,7 @@ export class DbService implements OnModuleInit {
 
     try {
       await this.sqlConnection.init();
-      // await this.sqlConnection.sync({ alter: true });
+      await this.sqlConnection.sync({ alter: true });
       this.logger.log('✅ SQL connection and model setup complete.');
     } catch (error) {
       this.logger.error(

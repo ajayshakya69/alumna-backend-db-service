@@ -162,12 +162,12 @@ export class Recommendation extends Model<
 // chatbot.schema.ts
 export function setupAssociations() {
   Chat.hasMany(Recommendation, {
-    foreignKey: '',
+    foreignKey: 'messageId',
     as: 'recommendations',
   });
 
   Recommendation.belongsTo(Chat, {
-    foreignKey: 'id',
+    foreignKey: 'messageId',
     as: 'chat',
   });
 }
