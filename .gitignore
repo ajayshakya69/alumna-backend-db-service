@@ -15,7 +15,6 @@ azure-pipelines.yml
 
 # OS
 .DS_Store
-.github
 
 # Tests
 /coverage
