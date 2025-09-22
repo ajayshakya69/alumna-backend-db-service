@@ -7,6 +7,7 @@ import { ReqResInterceptor } from 'src/core/interceptors/response-interceptor';
 import { LoggerModule } from 'src/core/services/logger/logger.module';
 import { HttpExceptionFilter } from 'src/core/filters/http-exception.filter';
 import { ChatbotModule } from 'src/modules/chatbot/chatbot.module';
+import { CollegeModule } from 'src/modules/colleges/colleges.modue';
 
 @Module({
   imports: [
@@ -16,8 +17,10 @@ import { ChatbotModule } from 'src/modules/chatbot/chatbot.module';
     DbModule,
     LoggerModule,
     HealthCheckModule,
+
     // modules
     ChatbotModule,
+    CollegeModule,
   ],
   providers: [
     {
