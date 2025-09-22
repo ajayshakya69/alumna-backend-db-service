@@ -1,9 +1,14 @@
 FROM node:20-alpine AS build
 
 WORKDIR /build
-COPY . .
+
+COPY yarn.lock package.json tsconfig.json ./
+
 RUN yarn install
-RUN yarn build
+
+COPY src ./src
+
+RUN yarn run build
 
 FROM node:20-alpine AS prod
 
