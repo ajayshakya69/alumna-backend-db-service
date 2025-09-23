@@ -30,7 +30,7 @@ export class ChatbotService {
     id: string,
     data: Partial<{ title: string; description: string; feedback: any }>,
   ) {
-    return this.ChatRoomModel.update(data, { where: { id } });
+    this.ChatRoomModel.update(data, { where: { id } });
   }
 
   async deleteChatRoom(id: string) {
@@ -52,21 +52,24 @@ export class ChatbotService {
     isTimeout?: boolean;
   }) {
     // Save user message
-    //
-    console.log('ajay', data.message);
 
     const userMessage = await this.ChatModel.create(data);
 
     // Don't call ML for BOT messages (avoid loops)
     if (data.sender !== SenderType.BOT) {
-      console.log('run for chatMessages');
       try {
         const mlResponse = await axios.post(
           `${process.env.ML_MODEL_URL}/chat?chat_id=${data.chatId}`,
           { message: data.message },
         );
 
-        console.log('ajay', mlResponse.data);
+        const checkTitle = await this.findChatRoomById(data.chatId);
+
+        if (!checkTitle.title) {
+          this.updateChatRoom(data.chatId, {
+            title: mlResponse.data?.conversation_title,
+          });
+        }
 
         const botMessage = await this.ChatModel.create({
           chatId: data.chatId,
