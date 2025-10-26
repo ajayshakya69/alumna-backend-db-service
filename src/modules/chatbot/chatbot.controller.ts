@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Post,
   Query,
@@ -39,6 +40,11 @@ export class ChatbotController {
   @Get('rooms')
   async getAllChatRoomsOfUser(@Query('userId') userId: string) {
     return this.chatService.getAllChatRoomsOfUser(userId);
+  }
+
+  @Delete('rooms')
+  async deleteChatRoom(@Query('room_id') roomId: string) {
+    return this.chatService.deleteChatRoom(roomId);
   }
 
   @Get('messages')

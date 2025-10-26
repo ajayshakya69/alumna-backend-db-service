@@ -34,7 +34,15 @@ export class ChatbotService {
   }
 
   async deleteChatRoom(id: string) {
-    return this.ChatRoomModel.destroy({ where: { id } });
+    try {
+      const res = await this.ChatRoomModel.destroy({ where: { id } });
+      if (!res) {
+        return 'Chat room not found';
+      }
+      return 'Chat room deleted, successfully';
+    } catch (err) {
+      return 'Error deleting chat room';
+    }
   }
 
   async getAllChatRoomsOfUser(userId: string) {
