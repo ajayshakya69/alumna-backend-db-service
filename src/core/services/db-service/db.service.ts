@@ -22,13 +22,13 @@ export class DbService implements OnModuleInit {
     this.sqlConnection = new SqlService(
       process.env.POSTGRES_CONNECTION_STRING!,
     );
-    // this.mongoConnection = new MongoService(
-    //   process.env.MONGO_CONNECTION_STRING!,
-    // );
+    this.mongoConnection = new MongoService(
+      process.env.MONGO_CONNECTION_STRING!,
+    );
     this.sqlService = this.sqlConnection.models;
 
     // this.sqlConnection.sync({ alter: true });
-    // this.mongoService = this.mongoConnection.models;
+    this.mongoService = this.mongoConnection.models;
   }
 
   async onModuleInit(): Promise<void> {

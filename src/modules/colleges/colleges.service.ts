@@ -1,16 +1,19 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
+import mongoose from 'mongoose';
+import { Sequelize } from 'sequelize';
+import { CollegeModel } from './colleges.schema';
 
 @Injectable()
 export class CollegeService {
+  private readonly CollegeModel = CollegeModel;
   async getAllColleges() {
     try {
-      const res = await axios.get(
-        'https://api.admissionjockey.in/api/property',
-      );
+      const res = await this.CollegeModel.findAll();
 
-      return res.data;
+      return res;
     } catch (err: any) {
+      Logger.error('Error fetching colleges:', err);
       throw new BadRequestException('Error fetching colleges');
     }
   }
